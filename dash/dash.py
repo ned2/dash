@@ -10,8 +10,7 @@ from functools import wraps
 
 import plotly
 import dash_renderer
-import flask
-from flask import Flask, Response
+from flask import Flask, Response, request, jsonify
 from flask_compress import Compress
 
 from .dependencies import Event, Input, Output, State
@@ -29,6 +28,7 @@ class Dash(object):
             server=None,
             static_folder=None,
             url_base_pathname='/',
+            compress=True,
             **kwargs):
 
         # pylint-disable: too-many-instance-attributes
@@ -54,8 +54,9 @@ class Dash(object):
         # list of dependencies
         self.callback_map = {}
 
-        # gzip
-        Compress(self.server)
+        if compress:
+            # gzip
+            Compress(self.server)
 
         @self.server.errorhandler(exceptions.PreventUpdate)
         def _handle_error(error):
@@ -157,7 +158,7 @@ class Dash(object):
         layout = self._layout_value()
 
         # TODO - Set browser cache limit - pass hash into frontend
-        return flask.Response(
+        return Response(
             json.dumps(layout,
                        cls=plotly.utils.PlotlyJSONEncoder),
             mimetype='application/json'
@@ -170,7 +171,7 @@ class Dash(object):
         }
 
     def serve_routes(self):
-        return flask.Response(
+        return Response(
             json.dumps(self.routes,
                        cls=plotly.utils.PlotlyJSONEncoder),
             mimetype='application/json'
@@ -315,7 +316,7 @@ class Dash(object):
         '''.format(title, css, config, scripts)
 
     def dependencies(self):
-        return flask.jsonify([
+        return jsonify([
             {
                 'output': {
                     'id': k.split('.')[0],
@@ -516,7 +517,7 @@ class Dash(object):
                     }
                 }
 
-                return flask.Response(
+                return Response(
                     json.dumps(response,
                                cls=plotly.utils.PlotlyJSONEncoder),
                     mimetype='application/json'
@@ -529,7 +530,7 @@ class Dash(object):
         return wrap_func
 
     def dispatch(self):
-        body = flask.request.get_json()
+        body = request.get_json()
         inputs = body.get('inputs', [])
         state = body.get('state', [])
         output = body['output']
