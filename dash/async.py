@@ -1,3 +1,41 @@
+"""An asynchronous drop-in replacement for the Dash Class that uses Quart.
+
+Quart is a Flask-API compatible web framework that is based on asyncio, which
+means it's faster at processing IO bound requests than apparently even gunicorn
+with async workers.
+
+This is a proof of concept that shows we can switch out Flask and use
+Quart with Dash.  Apparently Quart is not production ready though.
+
+https://gitlab.com/pgjones/quart
+
+
+To use as drop in replacement for the Dash class do the following:
+
+    $ pip install quart
+ 
+Then just use like the Dash class:
+
+    app = DashAsync()
+
+or:
+    from quart import Quart
+
+    server = Quart(__name__)
+    app = DashAsync(__name__, server=server)
+
+
+Quart is faster that Flask out of the box, but to really get speedups you should
+use gunicorn with uvloop worker classes like so:
+
+    $ pip install gunicorn uvloop
+    $ gunicorn --worker-class quart.worker.GunicornUVLoopWorker app:app.server
+
+"""
+
+
+
+
 import quart
 from quart import Quart
 
@@ -13,8 +51,6 @@ dash.Response = quart.Response
 class DashAsync(dash.Dash):
     """Dash subclass that uses Quart Instead of Flask"""
 
-    # should hopefully work as a drop in replacement for the Dash class
-    
     def __init__(self, name=None, server=None, static_folder=None, **kwargs):
         name = name or 'dash'
         server = server or Quart(name, static_folder=static_folder)
