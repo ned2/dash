@@ -4,8 +4,8 @@ Quart is a Flask-API compatible web framework that is based on asyncio, which
 means it's faster at processing IO bound requests than apparently even gunicorn
 with async workers.
 
-This is a proof of concept that shows we can switch out Flask and use
-Quart with Dash.  Apparently Quart is not production ready though.
+This is a proof of concept that shows we can switch out Flask and use Quart with
+Dash.
 
 https://gitlab.com/pgjones/quart
 
@@ -58,7 +58,7 @@ class DashAsync(dash.Dash):
             name=name,
             server=server,
             static_folder=static_folder,
-            compress=False,
+            compress=True,
             **kwargs
         )
 
