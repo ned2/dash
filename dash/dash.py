@@ -28,7 +28,7 @@ class Dash(object):
             self,
             name=None,
             server=None,
-            static_folder=None,
+            static_folder='static',
             url_base_pathname='/',
             compress=True,
             **kwargs):
