@@ -71,7 +71,7 @@ class Dash(object):
             name='__main__',
             server=None,
             static_folder='static',
-            assets_folder=None,
+            assets_folder='assets',
             assets_url_path='/assets',
             assets_ignore='',
             include_assets_files=True,
@@ -97,8 +97,8 @@ class Dash(object):
                 ''', DeprecationWarning)
 
         name = name if server is None else server.name
-        self._assets_folder = assets_folder or os.path.join(
-            flask.helpers.get_root_path(name), 'assets'
+        self._assets_folder = os.path.join(
+            flask.helpers.get_root_path(name), assets_folder
         )
 
         # allow users to supply their own flask server
